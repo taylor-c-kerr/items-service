@@ -48,7 +48,8 @@ passport.use(
 				new User({
 					_id: new mongoose.Types.ObjectId(),
 					googleId: profile.id,
-					email: profile.emails[0].value
+					email: profile.emails[0].value,
+					role: "standard"
 				})
 				.save()
 				.then((newUser) => {

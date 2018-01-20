@@ -3,6 +3,7 @@ var passport = require('passport');
 
 // auth login
 router.get('/login', (req, res) => {
+	console.log('hello');	
 	res.send('login');
 });
 
