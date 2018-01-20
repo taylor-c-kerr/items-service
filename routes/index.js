@@ -4,7 +4,7 @@ var db = require('../queries')
 
 function isAuthenticated(req, res, next) {
 	if (req.user) {
-		return next():
+		return next();
 	} else {
 		res.send('Not authorized to see this!');
 	}
