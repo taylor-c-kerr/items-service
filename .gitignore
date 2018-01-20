@@ -1,4 +1,5 @@
 /models/*
+/node_modules/*
 /config/keys.js
 queries.js
 .DS_Store
