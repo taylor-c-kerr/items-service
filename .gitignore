@@ -1,5 +1,4 @@
-/models/item.js
-/models/user.js
+/models/*
 /config/keys.js
 queries.js
 .DS_Store
