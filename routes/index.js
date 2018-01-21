@@ -5,6 +5,7 @@ var db = require('../queries')
 function isAuthenticated(req, res, next) {
 	console.log(req.user);
 	if (req.user) {
+		res.redirect('http://localhost:8000/index.html');
 		return next();
 	} else {
 		res.status(401).json({
