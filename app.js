@@ -5,15 +5,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var keys = require('./config/keys');
-var cookieSession = require('cookie-session');
 var passport = require('passport');
 var cors = require('cors');
+var helpers = require('./helpers'); 
 
 var apiRoutes = require('./routes/index');
-var authRoutes = require('./routes/auth-routes');
 var profRoutes = require('./routes/profile');
 
-var passportSetup = require('./config/passport-setup');
 
 // connect to mongodb
 mongoose.connect(keys.mongodb.dbURI, { useMongoClient: true });
@@ -25,24 +23,25 @@ var app = express();
 // allow cors to be done in http requests
 app.use(cors());
 
-app.use(cookieSession({
-	// 1 day = 24 hours * 60 min/hr * 60 sec/min * 1000 ms/sec
-	maxAge: 24 * 60 * 60 * 1000,
-	keys: [keys.session.cookieKey]
-}));
-
-// initialize passport
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(function(req, res, next) {
+  helpers.verifyAuth(keys.api.key, function(error, result) {
+    if (result) {
+      next();
+    }
+    else {
+      res.status(401);
+      res.json({
+        'error': 'Not authorized'
+      });
+    }
+  })
+})
 app.use('/', apiRoutes);
-app.use('/auth', authRoutes);
-app.use('/profile', profRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -126,11 +126,19 @@ function deleteItem(req, res, next) {
 	})
 }
 
+function handleToken(req, res, next) {
+	res.status(200).json({
+		message: 'Token received',
+		params: req.params,
+		body: req.body
+	})
+}
 
 module.exports = {
 	postItem: postItem,
 	getAllItems: getAllItems,
 	getItem: getItem,
 	updateItem: updateItem,
-	deleteItem: deleteItem
+	deleteItem: deleteItem,
+	handleToken: handleToken
 }
