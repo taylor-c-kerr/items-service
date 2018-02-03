@@ -1,17 +1,22 @@
+var helpers = require('./helpers');
 var mongoose = require('mongoose');
 var Item = require('./models/item');
+var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
 
 
 function postItem(req, res, next) {
+	console.log(req.body);
 	const item = new Item({
 		_id : new mongoose.Types.ObjectId(),
 		name : req.body.name,
 		type : req.body.type
 	});
 
+	console.log('queries before being savd.  item: ' + item);
 	item.save()
 	.then(result => {
-		console.log(result);
+		console.log('promise after being saved.  item/result: ' + result)
 		res.status(201).json({
 			message: "Item created",
 			data: {
@@ -20,13 +25,12 @@ function postItem(req, res, next) {
 				_id: result._id,
 				request: {
 					type: 'GET',
-					ur: 'http://localhost:3000/api/items/' + result._id
+					url: 'http://localhost:3000/api/items/' + result._id
 				}
 			}
 		});
 	})
 	.catch(err => {
-		console.log(err);
 		res.status(500).json({error: err})
 	});
 }
@@ -56,7 +60,6 @@ function getAllItems(req, res, next) {
 		res.status(200).json(response);
 	})
 	.catch(err => {
-		console.log(err);
 		res.status(500).json({
 			error: err
 		});
@@ -70,7 +73,6 @@ function getItem (req, res, next) {
 	.select('name type _id')
 	.exec()
 	.then(doc => {
-			console.log(doc);
 			if (doc) {
 				res.status(200).json({
 					item: doc
@@ -80,7 +82,6 @@ function getItem (req, res, next) {
 			}
 		})
 	.catch(err => {
-			console.log(err);
 			res.status(500).json({error: err,})
 		});
 }
@@ -91,7 +92,6 @@ function updateItem(req, res, next) {
 	Item.update({_id : id}, { $set : updateObject })
 	.exec()
 	.then(result => {
-		console.log(result);
 		res.status(200).json({
 			message: "Item updated",
 			request: {
@@ -101,7 +101,6 @@ function updateItem(req, res, next) {
 		});
 	})
 	.catch(err => {
-		console.log(err);
 		res.status(500).json({ error : err });
 	})
 }
@@ -112,26 +111,29 @@ function deleteItem(req, res, next) {
 	.exec()
 	.then(result => {
 		res.status(200).json({
-			message: 'Item deleted successfully',
-			request: {
-				type: 'POST',
-				url: 'http://localhost:3000/api/items',
-				body: {name: 'Sting', type: 'String'}
-			}
+			message: 'Item deleted successfully'
 		});
 	})
 	.catch(err => {
-		console.log(err);
 		res.status(500).json(err);
 	})
 }
 
 function handleToken(req, res, next) {
-	res.status(200).json({
-		message: 'Token received',
-		params: req.params,
-		body: req.body
-	})
+	helpers.verifyAuth(req.headers.authorization, (error, result) => {
+		if (error) {
+			console.log(error);
+		}
+		else {
+			res.cookie('itemCookie', 'itemCookieValue');
+			res.status(200).json({
+				message: 'Token received',
+				params: req.params,
+				body: req.body,
+				headers: req.headers
+			})
+		}
+	});
 }
 
 module.exports = {
