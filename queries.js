@@ -119,7 +119,7 @@ function deleteItem(req, res, next) {
 	})
 }
 
-function handleToken(req, res, next) {
+/*function handleToken(req, res, next) {
 	helpers.verifyAuth(req.headers.authorization, (error, result) => {
 		if (error) {
 			console.log(error);
@@ -134,13 +134,13 @@ function handleToken(req, res, next) {
 			})
 		}
 	});
-}
+}*/
 
 module.exports = {
 	postItem: postItem,
 	getAllItems: getAllItems,
 	getItem: getItem,
 	updateItem: updateItem,
-	deleteItem: deleteItem,
-	handleToken: handleToken
+	deleteItem: deleteItem/*,
+	handleToken: handleToken*/
 }

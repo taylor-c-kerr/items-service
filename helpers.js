@@ -6,6 +6,7 @@ function verifyAuth(token, callback) {
 	// console.log(url);
 	request.get(url, (error, response, body) => {
 		var res = JSON.parse(response.body);
+		console.log(res.email, res.iss);
 		if (res.email === 'tckerr14@gmail.com' && res.iss === 'accounts.google.com') {
 			callback(null, true);
 		}
