@@ -25,10 +25,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(function(req, res, next) {
-  console.log('Inside middleware.  req.headers:\n', req.headers.authorization);
   helpers.verifyAuth(req.headers.authorization, function(error, result) {
     if (result) {
-      // res.cookie('itemCookie', 'itemCookieValue');
       next();
     }
     else {
@@ -38,7 +36,6 @@ app.use(function(req, res, next) {
         'error': 'Not authorized',
         'code' : 401
       });
-      // res.redirect('localhost:8000/login.html');
     }
   })
 });
