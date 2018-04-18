@@ -49,7 +49,7 @@ function getAllItems(req, res, next) {
 				return {
 					name: doc.name,
 					type: doc.type,
-					_id: doc._id	,
+					_id: doc._id,
 					request: {
 						type: 'GET',
 						url: 'http://localhost:3000/api/items/' + doc._id
