@@ -24,22 +24,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-/*app.use(function(req, res, next) {
-  helpers.verifyAuth(req.headers.authorization, function(error, result) {
-    if (result) {
-      next();
-    }
-    else {
-      console.log(error);
-      res.status(401);
-      res.json({
-        'error': 'Not authorized',
-        'code' : 401
-      });
-    }
-  })
-});*/
-
 app.use('/', apiRoutes);
 
 // catch 404 and forward to error handler

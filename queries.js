@@ -1,31 +1,29 @@
 var helpers = require('./helpers');
 var mongoose = require('mongoose');
-var Item = require('./models/item');
+var Noun = require('./models/noun');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 
 
-function postItem(req, res, next) {
+function postNoun(req, res, next) {
 	console.log(req.body);
-	const item = new Item({
+	const noun = new Noun({
 		_id : new mongoose.Types.ObjectId(),
 		name : req.body.name,
-		type : req.body.type
 	});
 
-	console.log('queries before being savd.  item: ' + item);
-	item.save()
+	console.log('queries before being savd.  noun: ' + noun);
+	noun.save()
 	.then(result => {
-		console.log('promise after being saved.  item/result: ' + result)
+		console.log('promise after being saved.  noun/result: ' + result)
 		res.status(201).json({
-			message: "Item created",
+			message: "Noun created",
 			data: {
 				name: result.name,
-				type: result.type,
 				_id: result._id,
 				request: {
 					type: 'GET',
-					url: 'http://localhost:3000/api/items/' + result._id
+					url: 'http://localhost:3000/api/nouns/' + result._id
 				}
 			}
 		});
@@ -35,24 +33,25 @@ function postItem(req, res, next) {
 	});
 }
 
-function getAllItems(req, res, next) {
-	Item.find()
+function getAllNouns(req, res, next) {
+	console.log(req.query)
+	Noun.find(req.query)
 	// Filter what fields I want to GET
-	.select('name type _id')
+	// .select('name _id')
 	.exec()
 	.then(docs => {
-		var types = Array.from(new Set(docs.map(x => x.type))).sort();
+		console.log(docs);
+		// var types = Array.from(new Set(docs.map(x => x.type))).sort();
 		var response = {
 			count: docs.length,
-			types: types,
-			items: docs.map(doc => {
+			nouns: docs.map(doc => {
 				return {
 					name: doc.name,
-					type: doc.type,
+					category: doc.category,
 					_id: doc._id,
 					request: {
 						type: 'GET',
-						url: 'http://localhost:3000/api/items/' + doc._id
+						url: 'http://localhost:3000/api/nouns/' + doc._id
 					}
 				}
 			})
@@ -66,16 +65,17 @@ function getAllItems(req, res, next) {
 	});
 }
 
-function getItem (req, res, next) {
+function getNoun (req, res, next) {
 	var id = req.params.id;
 
-	Item.findById(id)
-	.select('name type _id')
+	Noun.findById(id)
+	.select('name _id')
 	.exec()
 	.then(doc => {
 			if (doc) {
 				res.status(200).json({
-					item: doc
+					_id: doc._id,
+					name: doc.name
 				});
 			} else {
 				res.status(404).json({message: 'No valid entry found for provided ID'});
@@ -86,17 +86,17 @@ function getItem (req, res, next) {
 		});
 }
 
-function updateItem(req, res, next) {
+function updateNoun(req, res, next) {
 	var id = req.params.id;
 	var updateObject = req.body;
-	Item.update({_id : id}, { $set : updateObject })
+	Noun.update({_id : id}, { $set : updateObject })
 	.exec()
 	.then(result => {
 		res.status(200).json({
-			message: "Item updated",
+			message: "Noun updated",
 			request: {
 				type: 'GET',
-				url: 'http://localhost:3000/api/items/' + id
+				url: 'http://localhost:3000/api/nouns/' + id
 			}
 		});
 	})
@@ -105,13 +105,13 @@ function updateItem(req, res, next) {
 	})
 }
 
-function deleteItem(req, res, next) {
+function deleteNoun(req, res, next) {
 	var id = req.params.id;
-	Item.remove({_id : id})
+	Noun.remove({_id : id})
 	.exec()
 	.then(result => {
 		res.status(200).json({
-			message: 'Item deleted successfully'
+			message: 'Noun deleted successfully'
 		});
 	})
 	.catch(err => {
@@ -125,7 +125,7 @@ function deleteItem(req, res, next) {
 			console.log(error);
 		}
 		else {
-			res.cookie('itemCookie', 'itemCookieValue');
+			res.cookie('nounCookie', 'nounCookieValue');
 			res.status(200).json({
 				message: 'Token received',
 				params: req.params,
@@ -137,10 +137,10 @@ function deleteItem(req, res, next) {
 }*/
 
 module.exports = {
-	postItem: postItem,
-	getAllItems: getAllItems,
-	getItem: getItem,
-	updateItem: updateItem,
-	deleteItem: deleteItem/*,
+	postNoun: postNoun,
+	getAllNouns: getAllNouns,
+	getNoun: getNoun,
+	updateNoun: updateNoun,
+	deleteNoun: deleteNoun/*,
 	handleToken: handleToken*/
 }

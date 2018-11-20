@@ -3,10 +3,10 @@ var router = express.Router();
 var db = require('../queries');
 
 
-router.post('/api/items', db.postItem);
-router.get('/api/items', db.getAllItems);
-router.get('/api/items/:id', db.getItem);
-router.patch('/api/items/:id', db.updateItem);
-router.delete('/api/items/:id', db.deleteItem);
+router.post('/api/nouns', db.postNoun);
+router.get('/api/nouns', db.getAllNouns);
+router.get('/api/nouns/:id', db.getNoun);
+router.patch('/api/nouns/:id', db.updateNoun);
+router.delete('/api/nouns/:id', db.deleteNoun);
 
 module.exports = router;
