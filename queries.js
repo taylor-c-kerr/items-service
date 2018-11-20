@@ -10,20 +10,20 @@ function postNoun(req, res, next) {
 	const noun = new Noun({
 		_id : new mongoose.Types.ObjectId(),
 		name : req.body.name,
+		category : req.body.category
 	});
 
-	console.log('queries before being savd.  noun: ' + noun);
 	noun.save()
 	.then(result => {
-		console.log('promise after being saved.  noun/result: ' + result)
 		res.status(201).json({
 			message: "Noun created",
 			data: {
-				name: result.name,
 				_id: result._id,
+				name: result.name,
+				category: result.category,
 				request: {
 					type: 'GET',
-					url: 'http://localhost:3000/api/nouns/' + result._id
+					url: `http://localhost:8080/api/nouns/${result._id}`
 				}
 			}
 		});
@@ -46,12 +46,12 @@ function getAllNouns(req, res, next) {
 			count: docs.length,
 			nouns: docs.map(doc => {
 				return {
+					_id: doc._id,
 					name: doc.name,
 					category: doc.category,
-					_id: doc._id,
 					request: {
 						type: 'GET',
-						url: 'http://localhost:3000/api/nouns/' + doc._id
+						url: `http://localhost:8080/api/nouns/${doc._id}`
 					}
 				}
 			})
@@ -69,18 +69,20 @@ function getNoun (req, res, next) {
 	var id = req.params.id;
 
 	Noun.findById(id)
-	.select('name _id')
+	// .select('name _id')
 	.exec()
 	.then(doc => {
-			if (doc) {
-				res.status(200).json({
-					_id: doc._id,
-					name: doc.name
-				});
-			} else {
-				res.status(404).json({message: 'No valid entry found for provided ID'});
-			}
-		})
+		console.log(doc);
+		if (doc) {
+			res.status(200).json({
+				_id: doc._id,
+				name: doc.name,
+				category: doc.category
+			});
+		} else {
+			res.status(404).json({message: 'No valid entry found for provided ID'});
+		}
+	})
 	.catch(err => {
 			res.status(500).json({error: err,})
 		});
@@ -96,7 +98,7 @@ function updateNoun(req, res, next) {
 			message: "Noun updated",
 			request: {
 				type: 'GET',
-				url: 'http://localhost:3000/api/nouns/' + id
+				url: 'http://localhost:8080/api/nouns/' + id
 			}
 		});
 	})
