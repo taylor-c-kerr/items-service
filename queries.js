@@ -121,23 +121,6 @@ function deleteNoun(req, res, next) {
 	})
 }
 
-/*function handleToken(req, res, next) {
-	helpers.verifyAuth(req.headers.authorization, (error, result) => {
-		if (error) {
-			console.log(error);
-		}
-		else {
-			res.cookie('nounCookie', 'nounCookieValue');
-			res.status(200).json({
-				message: 'Token received',
-				params: req.params,
-				body: req.body,
-				headers: req.headers
-			})
-		}
-	});
-}*/
-
 module.exports = {
 	postNoun: postNoun,
 	getAllNouns: getAllNouns,
