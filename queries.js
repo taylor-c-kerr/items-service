@@ -4,7 +4,6 @@ var Noun = require('./models/noun');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 
-
 function postNoun(req, res, next) {
 	console.log(req.body);
 	const noun = new Noun({
@@ -34,13 +33,12 @@ function postNoun(req, res, next) {
 }
 
 function getAllNouns(req, res, next) {
-	console.log(req.query)
+	console.log('test')
 	Noun.find(req.query)
 	// Filter what fields I want to GET
 	// .select('name _id')
 	.exec()
 	.then(docs => {
-		console.log(docs);
 		// var types = Array.from(new Set(docs.map(x => x.type))).sort();
 		var response = {
 			count: docs.length,
@@ -72,7 +70,6 @@ function getNoun (req, res, next) {
 	// .select('name _id')
 	.exec()
 	.then(doc => {
-		console.log(doc);
 		if (doc) {
 			res.status(200).json({
 				_id: doc._id,
@@ -86,6 +83,29 @@ function getNoun (req, res, next) {
 	.catch(err => {
 			res.status(500).json({error: err,})
 		});
+}
+
+function getRandomNoun(req, res, next) {
+	Noun.aggregate({$sample : {size : 1}})
+	.exec()
+	.then(doc => {
+		let d = doc[0];
+		console.log(d);
+		res.status(200).json({
+			name: d.name,
+			category: d.category,
+			request : {
+				type: 'GET',
+				url: `http://localhost:8080/api/nouns/${d._id}`
+			}
+		})
+	})
+	.catch(err => {
+		console.log('err');
+		res.status(500).json({
+			error: err
+		});
+	});
 }
 
 function updateNoun(req, res, next) {
@@ -125,7 +145,7 @@ module.exports = {
 	postNoun: postNoun,
 	getAllNouns: getAllNouns,
 	getNoun: getNoun,
+	getRandomNoun: getRandomNoun,
 	updateNoun: updateNoun,
-	deleteNoun: deleteNoun/*,
-	handleToken: handleToken*/
+	deleteNoun: deleteNoun
 }
