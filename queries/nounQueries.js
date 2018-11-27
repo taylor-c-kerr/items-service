@@ -1,6 +1,5 @@
-var helpers = require('./helpers');
 var mongoose = require('mongoose');
-var Noun = require('./models/noun');
+var Noun = require('../models/noun');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 
@@ -86,7 +85,7 @@ function getNoun (req, res, next) {
 }
 
 function getRandomNoun(req, res, next) {
-	Noun.aggregate({$sample : {size : 1}})
+	Noun.aggregate( { $sample : { size : 1 } } )
 	.exec()
 	.then(doc => {
 		let d = doc[0];
