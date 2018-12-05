@@ -5,7 +5,6 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var keys = require('./config/keys');
 var cors = require('cors');
-var helpers = require('./helpers');
 
 var apiRoutes = require('./routes/index');
 

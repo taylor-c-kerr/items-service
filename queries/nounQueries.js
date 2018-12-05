@@ -26,14 +26,15 @@ function postNoun(req, res, next) {
 			}
 		});
 	})
-	.catch(err => {
-		res.status(500).json({error: err})
+	.catch(error => {
+		res.status(500).json({
+			error: error
+		})
 	});
 }
 
 function getAllNouns(req, res, next) {
-	console.log('test')
-	Noun.find(req.query)
+	Noun.find()
 	// Filter what fields I want to GET
 	// .select('name _id')
 	.exec()
@@ -55,9 +56,9 @@ function getAllNouns(req, res, next) {
 		}
 		res.status(200).json(response);
 	})
-	.catch(err => {
+	.catch(error => {
 		res.status(500).json({
-			error: err
+			error: error
 		});
 	});
 }
@@ -79,9 +80,10 @@ function getNoun (req, res, next) {
 			res.status(404).json({message: 'No valid entry found for provided ID'});
 		}
 	})
-	.catch(err => {
-			res.status(500).json({error: err,})
-		});
+	.catch(error => {
+			res.status(500).json({error: error})
+		}
+	);
 }
 
 function getRandomNoun(req, res, next) {
@@ -110,14 +112,14 @@ function getRandomNoun(req, res, next) {
 function updateNoun(req, res, next) {
 	var id = req.params.id;
 	var updateObject = req.body;
-	Noun.update({_id : id}, { $set : updateObject })
+	Noun.update( { _id : id }, { $set : updateObject } )
 	.exec()
 	.then(result => {
 		res.status(200).json({
 			message: "Noun updated",
 			request: {
 				type: 'GET',
-				url: 'http://localhost:8080/api/nouns/' + id
+				url: `http://localhost:8080/api/nouns/${id}`
 			}
 		});
 	})

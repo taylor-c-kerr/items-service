@@ -1,47 +1,54 @@
 var mongoose = require('mongoose');
-var Adverb = require('../models/adverb');
+var Name = require('../models/name');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 
-const postAdverb = (req, res, next) => {
-	const adverb = new Adverb({
+const postName = (req, res, next) => {
+	console.log(req.body);
+	const name = new Name({
 		_id : new mongoose.Types.ObjectId(),
 		name : req.body.name,
 		category : req.body.category
 	});
 
-	adverb.save()
+	name.save()
 	.then(result => {
 		res.status(201).json({
-			message: "Adverb created",
+			message: "Name created",
 			data: {
 				_id: result._id,
 				name: result.name,
 				category: result.category,
 				request: {
 					type: 'GET',
-					url: `http://localhost:8080/api/adverbs/${result._id}`
+					url: `http://localhost:8080/api/names/${result._id}`
 				}
 			}
-		})
+		});
 	})
+	.catch(error => {
+		res.status(500).json({
+			error: error
+		})
+	});
 }
-
-const getAllAdverbs = (req, res, next) => {
-	Adverb.find()
+const getAllNames = (req, res, next) => {
+	Name.find()
+	// Filter what fields I want to GET
+	// .select('name _id')
 	.exec()
 	.then(docs => {
 		// var types = Array.from(new Set(docs.map(x => x.type))).sort();
 		var response = {
 			count: docs.length,
-			adverbs: docs.map(doc => {
+			names: docs.map(doc => {
 				return {
 					_id: doc._id,
 					name: doc.name,
 					category: doc.category,
 					request: {
 						type: 'GET',
-						url: `http://localhost:8080/api/adverbs/${doc._id}`
+						url: `http://localhost:8080/api/names/${doc._id}`
 					}
 				}
 			})
@@ -55,10 +62,10 @@ const getAllAdverbs = (req, res, next) => {
 	});
 }
 
-const getAdverb =  (req, res, next) => {
+const getName =  (req, res, next) => {
 	var id = req.params.id;
 
-	Adverb.findById(id)
+	Name.findById(id)
 	// .select('name _id')
 	.exec()
 	.then(doc => {
@@ -78,21 +85,21 @@ const getAdverb =  (req, res, next) => {
 	);
 }
 
-const getRandomAdverb = (req, res, next) => {
+const getRandomName = (req, res, next) => {
 
 }
 
-const updateAdverb = (req, res, next) => {
+const updateName = (req, res, next) => {
 	var id = req.params.id;
 	var updateObject = req.body;
-	Adverb.update( { _id : id }, { $set : updateObject } )
+	Name.update( { _id : id }, { $set : updateObject } )
 	.exec()
 	.then(result => {
 		res.status(200).json({
-			message: "Adverb updated",
+			message: "Name updated",
 			request: {
 				type: 'GET',
-				url: `http://localhost:8080/api/adverbs/${id}`
+				url: `http://localhost:8080/api/names/${id}`
 			}
 		});
 	})
@@ -101,13 +108,13 @@ const updateAdverb = (req, res, next) => {
 	})
 }
 
-const deleteAdverb = (req, res, next) => {
+const deleteName = (req, res, next) => {
 	var id = req.params.id;
-	Adverb.remove( { _id : id } )
+	Name.remove( { _id : id } )
 	.exec()
 	.then(result => {
 		res.status(200).json({
-			message: 'Adverb deleted successfully'
+			message: 'Name deleted successfully'
 		});
 	})
 	.catch(err => {
@@ -116,10 +123,10 @@ const deleteAdverb = (req, res, next) => {
 }
 
 module.exports = {
-	postAdverb,
-	getAllAdverbs,
-	getAdverb,
-	getRandomAdverb,
-	updateAdverb,
-	deleteAdverb
+	postName,
+	getAllNames,
+	getName,
+	getRandomName,
+	updateName,
+	deleteName
 }
