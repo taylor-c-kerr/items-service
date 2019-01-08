@@ -4,6 +4,7 @@ const noun = require('../queries/nounQueries');
 const verb = require('../queries/verbQueries');
 const adjective = require('../queries/adjectiveQueries');
 const adverb = require('../queries/adverbQueries');
+const word = require('../queries/wordQueries');
 const name = require('../queries/nameQueries');
 
 
