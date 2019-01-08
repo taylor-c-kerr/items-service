@@ -78,7 +78,26 @@ const getWord =  (req, res, next) => {
 }
 
 const getRandomWord = (req, res, next) => {
-
+	Word.aggregate( { $sample : { size : 1 } } )
+	.exec()
+	.then(doc => {
+		let d = doc[0];
+		console.log(d);
+		res.status(200).json({
+			name: d.name,
+			category: d.category,
+			request : {
+				type: 'GET',
+				url: `http://localhost:8080/api/words/${d._id}`
+			}
+		})
+	})
+	.catch(err => {
+		console.log('err');
+		res.status(500).json({
+			error: err
+		});
+	});
 }
 
 const updateWord = (req, res, next) => {
