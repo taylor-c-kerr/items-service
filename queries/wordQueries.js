@@ -28,6 +28,9 @@ const postWord = (req, res, next) => {
 }
 
 const getAllWords = (req, res, next) => {
+	if (req.query.random === 'true') {
+		return getRandomWord(req, res, next);	
+	}
 	Word.find()
 	.exec()
 	.then(docs => {
