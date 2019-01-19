@@ -7,7 +7,8 @@ const postWord = (req, res, next) => {
 	const word = new Word({
 		_id : new mongoose.Types.ObjectId(),
 		name : req.body.name,
-		category: req.body.category
+		category: req.body.category,
+		definition: req.body.definition
 	});
 
 	word.save()
@@ -18,6 +19,7 @@ const postWord = (req, res, next) => {
 				_id: result._id,
 				name: result.name,
 				category: result.category,
+				definition: result.definition,
 				request: {
 					type: 'GET',
 					url: `http://localhost:8080/api/words/${result._id}`
@@ -41,6 +43,7 @@ const getAllWords = (req, res, next) => {
 					_id: doc._id,
 					name: doc.name,
 					category: doc.category,
+					definition: doc.definition,
 					request: {
 						type: 'GET',
 						url: `http://localhost:8080/api/words/${doc._id}`
@@ -67,7 +70,8 @@ const getWord =  (req, res, next) => {
 			res.status(200).json({
 				_id: doc._id,
 				name: doc.name,
-				category: doc.category
+				category: doc.category,
+				definition: doc.definition
 			});
 		} else {
 			res.status(404).json({message: 'No valid entry found for provided ID'});
@@ -88,6 +92,7 @@ const getRandomWord = (req, res, next) => {
 		res.status(200).json({
 			name: d.name,
 			category: d.category,
+			definition: doc.definition,
 			request : {
 				type: 'GET',
 				url: `http://localhost:8080/api/words/${d._id}`
