@@ -82,7 +82,6 @@ const getRandomWord = (req, res, next) => {
 	.exec()
 	.then(doc => {
 		let d = doc[0];
-		console.log(d);
 		res.status(200).json({
 			name: d.name,
 			category: d.category,
@@ -93,7 +92,6 @@ const getRandomWord = (req, res, next) => {
 		})
 	})
 	.catch(err => {
-		console.log('err');
 		res.status(500).json({
 			error: err
 		});
@@ -104,7 +102,7 @@ const updateWord = (req, res, next) => {
 	let id = req.params.id;
 	let updateObject = req.body;
 
-	Word.update( { _id : _id }, { $set : updateObject } )
+	Word.update( { _id : id }, { $set : updateObject } )
 	.exec()
 	.then(result => {
 		res.status(200).json({
