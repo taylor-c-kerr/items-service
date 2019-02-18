@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Adverb = require('../models/adverb');
-var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+const mongoose = require('mongoose');
+const Adverb = require('../models/adverb');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 
 const postAdverb = (req, res, next) => {
 	const adverb = new Adverb({
@@ -31,8 +31,8 @@ const getAllAdverbs = (req, res, next) => {
 	Adverb.find()
 	.exec()
 	.then(docs => {
-		// var types = Array.from(new Set(docs.map(x => x.type))).sort();
-		var response = {
+		// let types = Array.from(new Set(docs.map(x => x.type))).sort();
+		let response = {
 			count: docs.length,
 			adverbs: docs.map(doc => {
 				return {
@@ -56,7 +56,7 @@ const getAllAdverbs = (req, res, next) => {
 }
 
 const getAdverb =  (req, res, next) => {
-	var id = req.params.id;
+	let id = req.params.id;
 
 	Adverb.findById(id)
 	// .select('name _id')
@@ -83,8 +83,8 @@ const getRandomAdverb = (req, res, next) => {
 }
 
 const updateAdverb = (req, res, next) => {
-	var id = req.params.id;
-	var updateObject = req.body;
+	let id = req.params.id;
+	let updateObject = req.body;
 	Adverb.update( { _id : id }, { $set : updateObject } )
 	.exec()
 	.then(result => {
@@ -102,7 +102,7 @@ const updateAdverb = (req, res, next) => {
 }
 
 const deleteAdverb = (req, res, next) => {
-	var id = req.params.id;
+	let id = req.params.id;
 	Adverb.remove( { _id : id } )
 	.exec()
 	.then(result => {

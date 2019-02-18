@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-var wordSchema = mongoose.Schema({
+const wordSchema = mongoose.Schema({
 	_id : mongoose.Schema.Types.ObjectId,
 	name : String,
 	category : Array,

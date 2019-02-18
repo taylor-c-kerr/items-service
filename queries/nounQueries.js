@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Noun = require('../models/noun');
-var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+const mongoose = require('mongoose');
+const Noun = require('../models/noun');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 
 function postNoun(req, res, next) {
 	console.log(req.body);
@@ -39,8 +39,8 @@ function getAllNouns(req, res, next) {
 	// .select('name _id')
 	.exec()
 	.then(docs => {
-		// var types = Array.from(new Set(docs.map(x => x.type))).sort();
-		var response = {
+		// let types = Array.from(new Set(docs.map(x => x.type))).sort();
+		let response = {
 			count: docs.length,
 			nouns: docs.map(doc => {
 				return {
@@ -64,7 +64,7 @@ function getAllNouns(req, res, next) {
 }
 
 function getNoun (req, res, next) {
-	var id = req.params.id;
+	let id = req.params.id;
 
 	Noun.findById(id)
 	// .select('name _id')
@@ -110,8 +110,8 @@ function getRandomNoun(req, res, next) {
 }
 
 function updateNoun(req, res, next) {
-	var id = req.params.id;
-	var updateObject = req.body;
+	let id = req.params.id;
+	let updateObject = req.body;
 	Noun.update( { _id : id }, { $set : updateObject } )
 	.exec()
 	.then(result => {
@@ -129,7 +129,7 @@ function updateNoun(req, res, next) {
 }
 
 function deleteNoun(req, res, next) {
-	var id = req.params.id;
+	let id = req.params.id;
 	Noun.remove({_id : id})
 	.exec()
 	.then(result => {

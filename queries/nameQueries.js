@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Name = require('../models/name');
-var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+const mongoose = require('mongoose');
+const Name = require('../models/name');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 
 const postName = (req, res, next) => {
 	console.log(req.body);
@@ -38,8 +38,8 @@ const getAllNames = (req, res, next) => {
 	// .select('name _id')
 	.exec()
 	.then(docs => {
-		// var types = Array.from(new Set(docs.map(x => x.type))).sort();
-		var response = {
+		// let types = Array.from(new Set(docs.map(x => x.type))).sort();
+		let response = {
 			count: docs.length,
 			names: docs.map(doc => {
 				return {
@@ -63,7 +63,7 @@ const getAllNames = (req, res, next) => {
 }
 
 const getName =  (req, res, next) => {
-	var id = req.params.id;
+	let id = req.params.id;
 
 	Name.findById(id)
 	// .select('name _id')
@@ -90,8 +90,8 @@ const getRandomName = (req, res, next) => {
 }
 
 const updateName = (req, res, next) => {
-	var id = req.params.id;
-	var updateObject = req.body;
+	let id = req.params.id;
+	let updateObject = req.body;
 	Name.update( { _id : id }, { $set : updateObject } )
 	.exec()
 	.then(result => {
@@ -109,7 +109,7 @@ const updateName = (req, res, next) => {
 }
 
 const deleteName = (req, res, next) => {
-	var id = req.params.id;
+	let id = req.params.id;
 	Name.remove( { _id : id } )
 	.exec()
 	.then(result => {

@@ -1,12 +1,12 @@
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var keys = require('./config/keys');
-var cors = require('cors');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const keys = require('./config/keys');
+const cors = require('cors');
 
-var apiRoutes = require('./routes/index');
+const apiRoutes = require('./routes/index');
 
 
 // connect to mongodb
@@ -15,7 +15,7 @@ mongoose.connect(keys.mongodb.dbURI, { useMongoClient: true });
 mongoose.Promise = global.Promise;
 
 // initiating the app
-var app = express();
+const app = express();
 // allow cors to be done in http requests
 app.use(cors());
 
@@ -27,7 +27,7 @@ app.use('/', apiRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  let err = new Error('Not Found');
   err.status = 404;
   next(err);
 });

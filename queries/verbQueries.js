@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Verb = require('../models/verb');
-var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+const mongoose = require('mongoose');
+const Verb = require('../models/verb');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 
 const postVerb = (req, res, next) => {
 	const verb = new Verb({

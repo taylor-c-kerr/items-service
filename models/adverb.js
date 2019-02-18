@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-var adverbSchema = mongoose.Schema({
+const adverbSchema = mongoose.Schema({
 	_id : mongoose.Schema.Types.ObjectId,
 	name : String,
 	category : Array

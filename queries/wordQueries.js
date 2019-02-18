@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Word = require('../models/word');
-var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+const mongoose = require('mongoose');
+const Word = require('../models/word');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 
 const postWord = (req, res, next) => {
 	const word = new Word({

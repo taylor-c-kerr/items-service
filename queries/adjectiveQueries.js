@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Adjective = require('../models/adjective');
-var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+const mongoose = require('mongoose');
+const Adjective = require('../models/adjective');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 
 const postAdjective = (req, res, next) => {
 	const adjective = new Adjective({
