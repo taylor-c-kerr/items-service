@@ -44,6 +44,8 @@ router.get('/api/words/:id', word.getWord);
 router.patch('/api/words/:id', word.updateWord);
 router.delete('/api/words/:id', word.deleteWord);
 
+router.get('/api/dev/words/definition', word.getWordsWithoutDefinitions);
+
 router.get('/liveops/ping', (req, res, next) => {
 	res.status(200).send('pong\n');
 })

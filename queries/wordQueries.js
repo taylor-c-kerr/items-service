@@ -140,11 +140,30 @@ const deleteWord = (req, res, next) => {
 	})
 }
 
+const getWordsWithoutDefinitions = (req, res, next) => {
+	Word.find({ definiton : null, category: {$in: ['adjective', 'adverb', 'noun', 'verb']} })
+	.exec()
+	.then(docs => {
+		let response = {
+			words: docs.map(doc => {
+				return doc.name;
+			})
+		};
+		res.status(200).json(response);
+	})
+	.catch(error => {
+		res.status(500).json({
+			error: error
+		});
+	});
+}
+
 module.exports = {
 	postWord,
 	getAllWords,
 	getWord,
 	getRandomWord,
+	getWordsWithoutDefinitions,
 	updateWord,
 	deleteWord
 }
