@@ -4,7 +4,7 @@ const wordSchema = mongoose.Schema({
 	_id : mongoose.Schema.Types.ObjectId,
 	name : String,
 	category : Array,
-	defintion : Array
+	definition : Array
 });
 
 

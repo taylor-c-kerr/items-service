@@ -109,6 +109,7 @@ const getRandomWord = (req, res, next) => {
 const updateWord = (req, res, next) => {
 	let id = req.params.id;
 	let updateObject = req.body;
+	console.log(updateObject);
 
 	Word.update( { _id : id }, { $set : updateObject } )
 	.exec()
@@ -141,12 +142,15 @@ const deleteWord = (req, res, next) => {
 }
 
 const getWordsWithoutDefinitions = (req, res, next) => {
-	Word.find({ definiton : null, category: {$in: ['adjective', 'adverb', 'noun', 'verb']} })
+	Word.find({ definition : {$size: 0} })
 	.exec()
 	.then(docs => {
 		let response = {
 			words: docs.map(doc => {
-				return doc.name;
+				return {
+					_id: doc._id,
+					name: doc.name,
+				}
 			})
 		};
 		res.status(200).json(response);
