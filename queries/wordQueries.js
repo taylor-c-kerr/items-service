@@ -44,6 +44,7 @@ const getAllWords = (req, res, next) => {
 					name: doc.name,
 					category: doc.category,
 					definition: doc.definition,
+					inflections: doc.inflections,
 					request: {
 						type: 'GET',
 						url: `http://localhost:8080/api/words/${doc._id}`
@@ -71,6 +72,7 @@ const getWord =  (req, res, next) => {
 				_id: doc._id,
 				name: doc.name,
 				category: doc.category,
+				inflections: doc.inflections,
 				definition: doc.definition
 			});
 		} else {
@@ -93,6 +95,7 @@ const getRandomWord = (req, res, next) => {
 			name: d.name,
 			category: d.category,
 			definition: doc.definition,
+			inflections: doc.inflections,
 			request : {
 				type: 'GET',
 				url: `http://localhost:8080/api/words/${d._id}`
@@ -142,7 +145,7 @@ const deleteWord = (req, res, next) => {
 }
 
 const getWordsWithoutDefinitions = (req, res, next) => {
-	Word.find({ definition : {$size: 0} })
+	Word.find({ definition : {$size: 0}, category: {$in: ['adjective', 'adverb', 'noun', 'verb']} })
 	.exec()
 	.then(docs => {
 		let response = {
