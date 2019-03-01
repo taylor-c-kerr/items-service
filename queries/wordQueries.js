@@ -6,31 +6,51 @@ const postWord = (req, res, next) => {
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     category: req.body.category,
+    inflections : req.body.inflections,
     definition: req.body.definition
   });
 
-  word.save()
-    .then((result) => {
-      res.status(201).json({
-        message: 'Word created',
-        data: {
-          _id: result._id,
-          name: result.name,
-          category: result.category,
-          definition: result.definition,
-          request: {
-            type: 'GET',
-            url: `http://localhost:8080/api/words/${result._id}`
-          }
+  Word.findOne({name: req.body.name})
+  .exec()
+  .then(response => {
+    if (response) {
+      return res.status(401).json({
+        message: 'this word already exists'
+      })
+    }
+    else {
+      word.save()
+        .then((result) => {
+          res.status(201).json({
+            message: 'Word created',
+            data: {
+              _id: result._id,
+              name: result.name,
+              category: result.category,
+              definition: result.definition,
+              request: {
+                type: 'GET',
+                url: `http://localhost:8080/api/words/${result._id}`
+              }
+            }
+          });
+        })
+        .catch(error => {
+          error.name === 'ValidationError' ? res.status(500).json({error: "One or more missing fields"}) : res.status(500).json({error: `Unknown Error: ${error.name}`})
         }
-      });
-    });
+        );
+    }
+  })
 };
 
 const getAllWords = (req, res, next) => {
   if (req.query.random === 'true') {
     return getRandomWord(req, res, next);
   }
+  if (req.query.name) {
+    return getWordByName(req, res, next);
+  }
+
   Word.find()
     .exec()
     .then((docs) => {
@@ -76,29 +96,6 @@ const getWord = (req, res, next) => {
       } else {
         res.status(404).json({message: 'No valid entry found for provided ID'});
       }
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err
-      });
-    });
-};
-
-const getRandomWord = (req, res, next) => {
-  Word.aggregate( {$sample: {size: 1}} )
-    .exec()
-    .then((doc) => {
-      const d = doc[0];
-      res.status(200).json({
-        name: d.name,
-        category: d.category,
-        definition: doc.definition,
-        inflections: doc.inflections,
-        request: {
-          type: 'GET',
-          url: `http://localhost:8080/api/words/${d._id}`
-        }
-      });
     })
     .catch((err) => {
       res.status(500).json({
@@ -164,6 +161,45 @@ const getWordsWithoutDefinitions = (req, res, next) => {
       });
     });
 };
+
+const getRandomWord = (req, res, next) => {
+  Word.aggregate( {$sample: {size: 1}} )
+    .exec()
+    .then((doc) => {
+      const d = doc[0];
+      res.status(200).json({
+        name: d.name,
+        category: d.category,
+        definition: doc.definition,
+        inflections: doc.inflections,
+        request: {
+          type: 'GET',
+          url: `http://localhost:8080/api/words/${d._id}`
+        }
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err
+      });
+    });
+};
+
+const getWordByName = (req, res, next) => {
+  console.log(req.query)
+  const name = req.query.name;
+
+  Word.findOne({"name": name})
+    .exec()
+    .then(doc => {
+      if (doc) {
+        res.status(200).json(doc)
+      }
+      else {
+        res.status(404).json({message: 'Word does not exist in db'});
+      }
+    })
+}
 
 module.exports = {
   postWord,
