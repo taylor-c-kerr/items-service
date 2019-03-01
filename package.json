@@ -18,5 +18,8 @@
     "npm": "^6.4.1",
     "request": "^2.88.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "eslint": "^5.14.1",
+    "eslint-config-google": "^0.12.0"
+  }
 }
