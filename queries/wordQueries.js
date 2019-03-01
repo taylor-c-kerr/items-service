@@ -51,7 +51,7 @@ const getAllWords = (req, res, next) => {
     return getWordByName(req, res, next);
   }
 
-  Word.find()
+  Word.find({}, '_id name')
     .exec()
     .then((docs) => {
       const response = {
@@ -60,9 +60,6 @@ const getAllWords = (req, res, next) => {
           return {
             _id: doc._id,
             name: doc.name,
-            category: doc.category,
-            definition: doc.definition,
-            inflections: doc.inflections,
             request: {
               type: 'GET',
               url: `http://localhost:8080/api/words/${doc._id}`
