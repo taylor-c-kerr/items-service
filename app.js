@@ -3,14 +3,14 @@ const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const keys = require('./config/keys');
+const config = require('./config');
 const cors = require('cors');
 
 const apiRoutes = require('./routes/index');
 
 
 // connect to mongodb
-mongoose.connect(keys.mongodb.dbURI, { useMongoClient: true });
+mongoose.connect(config.mongodb.dbURI, { useMongoClient: true });
 // set up promises for mongoose
 mongoose.Promise = global.Promise;
 
