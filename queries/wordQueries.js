@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 const Word = require('../models/word');
+const oxford = require('../services/oxford-dictionary-service');
 
 const postWord = (req, res, next) => {
   const word = new Word({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     category: req.body.category,
-    inflections : req.body.inflections,
-    definition: req.body.definition
+    inflections : [],
+    definition: []
   });
 
   Word.findOne({name: req.body.name})
@@ -19,26 +20,35 @@ const postWord = (req, res, next) => {
       })
     }
     else {
-      word.save()
-        .then((result) => {
-          res.status(201).json({
-            message: 'Word created',
-            data: {
-              _id: result._id,
-              name: result.name,
-              category: result.category,
-              definition: result.definition,
-              request: {
-                type: 'GET',
-                url: `http://localhost:8080/api/words/${result._id}`
-              }
-            }
-          });
+      return oxford.getDefinitionAndInflection(word.name)
+        .then(result => {
+          // setting the word to what we got from oxford
+          word.name = result.name;
+          word.inflections = result.inflections;
+          word.definition = result.definition;
+          console.log(word)
+        })
+        .then(() => {
+          word.save()
+            .then((result) => {
+              res.status(201).json({
+                message: 'Word created',
+                data: {
+                  _id: result._id,
+                  name: result.name,
+                  category: result.category,
+                  definition: result.definition,
+                  request: {
+                    type: 'GET',
+                    url: `http://localhost:8080/api/words/${result._id}`
+                  }
+                }
+              });
+            })
         })
         .catch(error => {
           error.name === 'ValidationError' ? res.status(500).json({error: "One or more missing fields"}) : res.status(500).json({error: `Unknown Error: ${error.name}`})
-        }
-        );
+        });
     }
   })
 };
@@ -183,7 +193,6 @@ const getRandomWord = (req, res, next) => {
 };
 
 const getWordByName = (req, res, next) => {
-  console.log(req.query)
   const name = req.query.name;
 
   Word.findOne({"name": name})

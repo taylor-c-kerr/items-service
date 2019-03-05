@@ -11,15 +11,15 @@ const wordSchema = mongoose.Schema({
 	},
 	category : {
 		type: Array,
-		required: true
+		required: false
 	},
 	inflections : {
 		type: Array,
-		required: true
+		required: false
 	},
 	definition : {
 		type: Array,
-		required: true
+		required: false
 	}
 });
 

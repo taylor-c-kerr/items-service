@@ -25,11 +25,38 @@ const getInflection = (word) => {
 		}
 	})
 	.then(response => {
-		return response.data.results
+		return response.data.results[0].lexicalEntries[0].inflectionOf[0].id;
 	})
 }
 
+const getDefinitionAndInflection = (word) => {
+	let res = {
+		name: word,
+		inflections: [],
+		definition: []
+	};
+	return getDefinition(word)
+		.then(response => {
+			res.definition.push(response);
+			// console.log(res)
+			return res
+		})
+		.catch(error => {
+			let res = {};
+			res.inflections = [word]
+			return getInflection(word)
+				.then(response => res.name = response)
+				.then(() => {
+					return getDefinition(res.name)
+						.then(response => {
+							res.definition = [response];
+							// console.log(res)
+							return res
+						})
+				})
+		})
+}
+
 module.exports = {
-	getDefinition,
-	getInflection
+	getDefinitionAndInflection
 }
