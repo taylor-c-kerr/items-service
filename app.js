@@ -10,7 +10,7 @@ const apiRoutes = require('./routes/index');
 
 
 // connect to mongodb
-mongoose.connect(config.mongodb.dbURI, { useMongoClient: true });
+mongoose.connect(config.mongodb.url.primary, { useMongoClient: true });
 // set up promises for mongoose
 mongoose.Promise = global.Promise;
 
