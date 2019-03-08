@@ -15,7 +15,6 @@ describe('E2E Tests', function() {
         .get('/api/words')
         .end( (err, res) => {
           // console.log(res.body)
-          expect(42).to.equal(42)
           expect(res.body.count).to.be.a('number');
           expect(res.body.count).to.be.greaterThan(-1);
           expect(res.body.words).to.exist;
@@ -29,28 +28,18 @@ describe('E2E Tests', function() {
     it('should blah', function() {
       // blah
     });
-  });
-  describe('GET /word', function() {
+  });*/
+  /*describe('GET /word', function() {
     it('should blah', function() {
       // blah
     });
-  });
-  describe('UPDATE /word', function() {
+  });*/
+  /*describe('UPDATE /word', function() {
     it('should blah', function() {
       // blah
     });
-  });
-  describe('DELETE /word', function() {
-    it('should blah', function() {
-      // blah
-    });
-  });
-  describe('GET /words', function() {
-    it('should blah', function() {
-      // blah
-    });
-  });
-  describe('GET /words', function() {
+  });*/
+  /*describe('DELETE /word', function() {
     it('should blah', function() {
       // blah
     });

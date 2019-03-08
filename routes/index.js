@@ -8,6 +8,7 @@ router.get('/api/words/:id', word.getWord);
 router.patch('/api/words/:id', word.updateWord);
 router.delete('/api/words/:id', word.deleteWord);
 
+// TODO: move this to scripts
 router.get('/api/dev/words/definition', word.getWordsWithoutDefinitions);
 
 router.get('/liveops/ping', (req, res, next) => {
