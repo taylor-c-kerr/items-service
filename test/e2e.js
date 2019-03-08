@@ -2,6 +2,9 @@ var chai = require('chai');
 const expect = require('chai').expect;
 const chaiHttp = require('chai-http');
 const app = require('../app')
+
+// https://www.chaijs.com/api/bdd/
+
 //TODO connect to test db
 chai.use(chaiHttp);
 
