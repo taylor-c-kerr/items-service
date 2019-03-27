@@ -1,5 +1,5 @@
 const axios = require('axios');
-const oxford = require('../config').oxford;
+const oxford = require('../../config').oxford;
 
 const getDefinition = (word) => {
 	return axios({

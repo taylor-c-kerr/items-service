@@ -169,6 +169,30 @@ const getWordsWithoutDefinitions = (req, res, next) => {
     });
 };
 
+const getWordsWithOldDefinition = (req, res, next) => {
+  Word.find({
+    // definition: { results : {$gt: 0} }
+    "definition.results" : {$size: 1}
+  })
+  .exec()
+    .then((docs) => {
+      const response = {
+        words: docs.map((doc) => {
+          return {
+            _id: doc._id,
+            name: doc.name
+          };
+        })
+      };
+      res.status(200).json(response);
+    })
+    .catch((error) => {
+      res.status(500).json({
+        error: error
+      });
+    });
+}
+
 const getRandomWord = (req, res, next) => {
   Word.aggregate( {$sample: {size: 1}} )
     .exec()
@@ -213,6 +237,7 @@ module.exports = {
   getWord,
   getRandomWord,
   getWordsWithoutDefinitions,
+  getWordsWithOldDefinition,
   updateWord,
   deleteWord
 };
