@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const Word = require('../models/word');
 const oxford = require('../services/oxford-dictionary-service');
+const response  = require('../helpers/responseHelpers');
 
-const postWord = (req, res, next) => {
+const postWord = (req, res) => {
   const word = new Word({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
@@ -26,23 +27,13 @@ const postWord = (req, res, next) => {
           word.name = result.name;
           word.inflections = result.inflections;
           word.definition = result.definition;
-          console.log(word)
         })
         .then(() => {
           word.save()
             .then((result) => {
               res.status(201).json({
                 message: 'Word created',
-                data: {
-                  _id: result._id,
-                  name: result.name,
-                  category: result.category,
-                  definition: result.definition,
-                  request: {
-                    type: 'GET',
-                    url: `http://localhost:8080/api/words/${result._id}`
-                  }
-                }
+                data: response.getOne(result)
               });
             })
         })
@@ -53,31 +44,18 @@ const postWord = (req, res, next) => {
   })
 };
 
-const getAllWords = (req, res, next) => {
+const getAllWords = (req, res) => {
   if (req.query.random === 'true') {
-    return getRandomWord(req, res, next);
+    return getRandomWord(req, res);
   }
   if (req.query.name) {
-    return getWordByName(req, res, next);
+    return getWordByName(req, res);
   }
 
   Word.find({}, '_id name')
     .exec()
     .then((docs) => {
-      const response = {
-        count: docs.length,
-        words: docs.map((doc) => {
-          return {
-            _id: doc._id,
-            name: doc.name,
-            request: {
-              type: 'GET',
-              url: `http://localhost:8080/api/words/${doc._id}`
-            }
-          };
-        })
-      };
-      res.status(200).json(response);
+      res.status(200).json(response.getMany(docs));
     })
     .catch((error) => {
       res.status(500).json({
@@ -86,20 +64,14 @@ const getAllWords = (req, res, next) => {
     });
 };
 
-const getWord = (req, res, next) => {
+const getWord = (req, res) => {
   const id = req.params.id;
 
   Word.findById(id)
     .exec()
     .then((doc) => {
       if (doc) {
-        res.status(200).json({
-          _id: doc._id,
-          name: doc.name,
-          category: doc.category,
-          inflections: doc.inflections,
-          definition: doc.definition
-        });
+        res.status(200).json(response.getOne(doc))
       } else {
         res.status(404).json({message: 'No valid entry found for provided ID'});
       }
@@ -111,7 +83,8 @@ const getWord = (req, res, next) => {
     });
 };
 
-const updateWord = (req, res, next) => {
+// TODO: fix response
+const updateWord = (req, res) => {
   const id = req.params.id;
   const updateObject = req.body;
 
@@ -131,7 +104,8 @@ const updateWord = (req, res, next) => {
     });
 };
 
-const deleteWord = (req, res, next) => {
+// TODO: fix response
+const deleteWord = (req, res) => {
   const id = req.params.id;
   Word.remove( {_id: id} )
     .exec()
@@ -145,22 +119,14 @@ const deleteWord = (req, res, next) => {
     });
 };
 
-const getWordsWithoutDefinitions = (req, res, next) => {
+const getWordsWithoutDefinitions = (req, res) => {
   Word.find({
     definition: {$size: 0},
     category: {$in: ['adjective', 'adverb', 'noun', 'verb']}
   })
     .exec()
     .then((docs) => {
-      const response = {
-        words: docs.map((doc) => {
-          return {
-            _id: doc._id,
-            name: doc.name
-          };
-        })
-      };
-      res.status(200).json(response);
+      res.status(200).json(response.getMany(docs));
     })
     .catch((error) => {
       res.status(500).json({
@@ -169,22 +135,14 @@ const getWordsWithoutDefinitions = (req, res, next) => {
     });
 };
 
-const getWordsWithOldDefinition = (req, res, next) => {
+const getWordsWithOldDefinition = (req, res) => {
   Word.find({
     // definition: { results : {$gt: 0} }
     "definition.results" : {$size: 1}
   })
   .exec()
     .then((docs) => {
-      const response = {
-        words: docs.map((doc) => {
-          return {
-            _id: doc._id,
-            name: doc.name
-          };
-        })
-      };
-      res.status(200).json(response);
+      res.status(200).json(response.getMany(docs));
     })
     .catch((error) => {
       res.status(500).json({
@@ -193,21 +151,14 @@ const getWordsWithOldDefinition = (req, res, next) => {
     });
 }
 
-const getRandomWord = (req, res, next) => {
+const getRandomWord = (req, res) => {
+  console.log('random')
   Word.aggregate( {$sample: {size: 1}} )
     .exec()
     .then((doc) => {
+      // console.log(doc)
       const d = doc[0];
-      res.status(200).json({
-        name: d.name,
-        category: d.category,
-        definition: doc.definition,
-        inflections: doc.inflections,
-        request: {
-          type: 'GET',
-          url: `http://localhost:8080/api/words/${d._id}`
-        }
-      });
+      res.status(200).json(response.getOne(d));
     })
     .catch((err) => {
       res.status(500).json({
@@ -216,14 +167,14 @@ const getRandomWord = (req, res, next) => {
     });
 };
 
-const getWordByName = (req, res, next) => {
+const getWordByName = (req, res) => {
   const name = req.query.name;
 
   Word.findOne({"name": name})
     .exec()
     .then(doc => {
       if (doc) {
-        res.status(200).json(doc)
+        res.status(200).json(response.getOne(doc))
       }
       else {
         res.status(404).json({message: 'Word does not exist in db'});

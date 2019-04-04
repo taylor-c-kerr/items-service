@@ -2,6 +2,9 @@
 const word = require('./boastfully');
 const definitions = word.definition[0].results;
 
+/*
+** @param {}
+*/
 const getDefinition = (allDefinitions) => {
 	for (const definition of allDefinitions) {
 		let result = [];
