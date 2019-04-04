@@ -1,9 +1,9 @@
 // const word = require('./bow');
-const word = require('./boastfully');
-const definitions = word.definition[0].results;
+// const word = require('./boastfully');
+// const definitions = word.definition[0].results;
 
 /*
-** @param {}
+** @param {array} allDefinitions List of definitions from Oxford that needs to be cleaned up
 */
 const getDefinition = (allDefinitions) => {
 	for (const definition of allDefinitions) {

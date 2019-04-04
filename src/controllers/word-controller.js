@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const Word = require('../models/word');
 const oxford = require('../services/oxford-dictionary-service');
-const response  = require('../helpers/responseHelpers');
+const responseHelper  = require('../helpers/responseHelpers');
+const newDefinition = require('../helpers/definition')
 
-const postWord = (req, res) => {
+const postWord = async (req, res) => {
   const word = new Word({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
@@ -23,17 +24,24 @@ const postWord = (req, res) => {
     else {
       return oxford.getDefinitionAndInflection(word.name)
         .then(result => {
+          // console.log(result);
+
           // setting the word to what we got from oxford
           word.name = result.name;
           word.inflections = result.inflections;
-          word.definition = result.definition;
+          return newDefinition(result.definition[0].results);
+        })
+        .then(goodDefinition => {
+          word.definition = goodDefinition
         })
         .then(() => {
+          console.log(word);
           word.save()
             .then((result) => {
+              // console.log(word)
               res.status(201).json({
                 message: 'Word created',
-                data: response.getOne(result)
+                data: responseHelper.getOne(word)
               });
             })
         })
@@ -55,7 +63,7 @@ const getAllWords = (req, res) => {
   Word.find({}, '_id name')
     .exec()
     .then((docs) => {
-      res.status(200).json(response.getMany(docs));
+      res.status(200).json(responseHelper.getMany(docs));
     })
     .catch((error) => {
       res.status(500).json({
@@ -71,7 +79,7 @@ const getWord = (req, res) => {
     .exec()
     .then((doc) => {
       if (doc) {
-        res.status(200).json(response.getOne(doc))
+        res.status(200).json(responseHelper.getOne(doc))
       } else {
         res.status(404).json({message: 'No valid entry found for provided ID'});
       }
@@ -126,7 +134,7 @@ const getWordsWithoutDefinitions = (req, res) => {
   })
     .exec()
     .then((docs) => {
-      res.status(200).json(response.getMany(docs));
+      res.status(200).json(responseHelper.getMany(docs));
     })
     .catch((error) => {
       res.status(500).json({
@@ -142,7 +150,7 @@ const getWordsWithOldDefinition = (req, res) => {
   })
   .exec()
     .then((docs) => {
-      res.status(200).json(response.getMany(docs));
+      res.status(200).json(responseHelper.getMany(docs));
     })
     .catch((error) => {
       res.status(500).json({
@@ -158,7 +166,7 @@ const getRandomWord = (req, res) => {
     .then((doc) => {
       // console.log(doc)
       const d = doc[0];
-      res.status(200).json(response.getOne(d));
+      res.status(200).json(responseHelper.getOne(d));
     })
     .catch((err) => {
       res.status(500).json({
@@ -174,7 +182,7 @@ const getWordByName = (req, res) => {
     .exec()
     .then(doc => {
       if (doc) {
-        res.status(200).json(response.getOne(doc))
+        res.status(200).json(responseHelper.getOne(doc))
       }
       else {
         res.status(404).json({message: 'Word does not exist in db'});
