@@ -7,7 +7,7 @@ const postWord = (req, res) => {
   const word = new Word({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
-    category: req.body.category,
+    category: [],
     inflections : [],
     definition: []
   });
