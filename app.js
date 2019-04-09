@@ -23,6 +23,9 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use('/home', (req, res) => {
+	res.send('Home Page')
+});
 app.use('/', routes);
 
 // catch 404 and forward to error handler
