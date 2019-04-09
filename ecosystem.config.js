@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'items-service',
-    script: 'node ./bin/www'
+    script: 'bin/www'
   }],
   deploy: {
     production: {
