@@ -53,9 +53,7 @@ const postWord = async (req, res) => {
 };
 
 const getAllWords = (req, res) => {
-  console.log('get all')
   if (req.query.random === 'true') {
-    console.log('get all random')
     return getRandomWord(req, res);
   }
   if (req.query.name) {
@@ -162,7 +160,7 @@ const getWordsWithOldDefinition = (req, res) => {
 }
 
 const getRandomWord = (req, res) => {
-  console.log('get random')
+  console.log('random')
   Word.aggregate( {$sample: {size: 1}} )
     .exec()
     .then((doc) => {
