@@ -8,7 +8,7 @@ const getOne = (doc) => {
 		name: doc.name,
 		category: doc.category,
 		definition: doc.definition,
-		url: `http://localhost:8080/api/words/${doc._id}`
+		url: `/api/words/${doc._id}`
 	}
 }
 
@@ -23,7 +23,7 @@ const getMany = (docs) => {
 	    return {
 	      _id: doc._id,
 	      name: doc.name,
-	      url: `http://localhost:8080/api/words/${doc._id}`
+	      url: `/api/words/${doc._id}`
 	    };
 	  })
 	};
