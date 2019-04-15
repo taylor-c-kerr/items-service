@@ -102,7 +102,6 @@ const updateWord = async (req, res) => {
   }    
 };
 
-// TODO: fix response
 const deleteWord = async (req, res) => {
   const id = req.params.id;
   try {
