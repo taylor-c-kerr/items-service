@@ -87,9 +87,12 @@ const updateWord = async (req, res) => {
 
   try {
     let word = await f.findById(Word, id);
+    if (!word) {
+      return res.status(404).json({error: 'Word does not exist'});
+    }
   }
   catch (error) {
-    return res.status(500).json({error: 'Word does not exist'});
+    return res.status(500).json({error: error});
   }
   
   try {
