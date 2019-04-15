@@ -77,7 +77,6 @@ const getWord = async (req, res) => {
   }
 };
 
-// TODO: fix response
 const updateWord = async (req, res) => {
   const id = req.params.id;
   const updateObject = req.body;
@@ -113,30 +112,30 @@ const deleteWord = async (req, res) => {
 };
 
 const getWordsWithoutDefinitions = async (req, res) => {
-const criteria = {
-  definition: {$size: 0}/*,
-  category: {$in: ['adjective', 'adverb', 'noun', 'verb']}*/
-};
+  const criteria = {
+    definition: {$size: 0}/*,
+    category: {$in: ['adjective', 'adverb', 'noun', 'verb']}*/
+  };
 
-try {
-  const words = await f.findMany(Word, criteria, '_id name');
-  return res.status(200).json(responseHelper.getMany(words));
-}
-catch (error) {
-  return res.status(500).json({
-      error: error
-    });
-}
-/*Word.find(criteria)
-  .exec()
-  .then((docs) => {
-    res.status(200).json(responseHelper.getMany(docs));
-  })
-  .catch((error) => {
-    res.status(500).json({
+  try {
+    const words = await f.findMany(Word, criteria, '_id name');
+    return res.status(200).json(responseHelper.getMany(words));
+  }
+  catch (error) {
+    return res.status(500).json({
         error: error
       });
-    });*/
+  }
+  /*Word.find(criteria)
+    .exec()
+    .then((docs) => {
+      res.status(200).json(responseHelper.getMany(docs));
+    })
+    .catch((error) => {
+      res.status(500).json({
+          error: error
+        });
+      });*/
 };
 
 const getWordsWithOldDefinition = async (req, res) => {
