@@ -63,12 +63,16 @@ const getAllWords = async (req, res) => {
   }
 };
 
-// TODO: error for 404
 const getWord = async (req, res) => {
   const id = req.params.id;
   try {
     const word = await f.findById(Word, id);
-    return res.status(200).json(responseHelper.getOne(word))
+    if (word) {
+      return res.status(200).json(responseHelper.getOne(word));
+    }
+    else {
+      return res.status(404).json({error: 'word does not exist'});
+    }
   }
   catch (error) {
     return res.status(500).json({
@@ -77,16 +81,18 @@ const getWord = async (req, res) => {
   }
 };
 
-// TODO: fix response
 const updateWord = async (req, res) => {
   const id = req.params.id;
   const updateObject = req.body;
 
   try {
     let word = await f.findById(Word, id);
+    if (!word) {
+      return res.status(404).json({error: 'Word does not exist'});
+    }
   }
   catch (error) {
-    return res.status(500).json({error: 'Word does not exist'});
+    return res.status(500).json({error: error});
   }
   
   try {
@@ -99,7 +105,6 @@ const updateWord = async (req, res) => {
   }    
 };
 
-// TODO: fix response
 const deleteWord = async (req, res) => {
   const id = req.params.id;
   try {
@@ -113,30 +118,30 @@ const deleteWord = async (req, res) => {
 };
 
 const getWordsWithoutDefinitions = async (req, res) => {
-const criteria = {
-  definition: {$size: 0}/*,
-  category: {$in: ['adjective', 'adverb', 'noun', 'verb']}*/
-};
+  const criteria = {
+    definition: {$size: 0}/*,
+    category: {$in: ['adjective', 'adverb', 'noun', 'verb']}*/
+  };
 
-try {
-  const words = await f.findMany(Word, criteria, '_id name');
-  return res.status(200).json(responseHelper.getMany(words));
-}
-catch (error) {
-  return res.status(500).json({
-      error: error
-    });
-}
-/*Word.find(criteria)
-  .exec()
-  .then((docs) => {
-    res.status(200).json(responseHelper.getMany(docs));
-  })
-  .catch((error) => {
-    res.status(500).json({
+  try {
+    const words = await f.findMany(Word, criteria, '_id name');
+    return res.status(200).json(responseHelper.getMany(words));
+  }
+  catch (error) {
+    return res.status(500).json({
         error: error
       });
-    });*/
+  }
+  /*Word.find(criteria)
+    .exec()
+    .then((docs) => {
+      res.status(200).json(responseHelper.getMany(docs));
+    })
+    .catch((error) => {
+      res.status(500).json({
+          error: error
+        });
+      });*/
 };
 
 const getWordsWithOldDefinition = async (req, res) => {
@@ -168,13 +173,16 @@ const getRandomWord = async (req, res) => {
   }
 };
 
-// TODO: error for 404
 const getWordByName = async (req, res) => {
   const name = req.query.name;
-  console.log(req.query);
   try {
     const word = await f.findOne(Word, {"name": name});
-    return res.status(200).json(responseHelper.getOne(word))
+    if (word) {
+      return res.status(200).json(responseHelper.getOne(word));
+    }
+    else {
+      return res.status(404).json({error: 'word does not exist'});
+    }
   }
   catch (error) {
     return res.status(500).json({
