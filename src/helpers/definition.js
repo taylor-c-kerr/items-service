@@ -4,8 +4,9 @@
 
 /*
 ** @param {array} allDefinitions List of definitions from Oxford that needs to be cleaned up
+** @returns {Promise}
 */
-const getDefinition = (allDefinitions) => {
+const getDefinition = async (allDefinitions) => {
 	for (const definition of allDefinitions) {
 		let result = [];
 		const partsOfSpeech = definition.lexicalEntries;
@@ -27,7 +28,6 @@ const getDefinition = (allDefinitions) => {
 				for (const sense of senses) {
 					const defs = sense.definitions ? sense.definitions : null;
 					if (defs) {
-
 						for (const def of defs) {
 							pos.entries.push(def);
 						}

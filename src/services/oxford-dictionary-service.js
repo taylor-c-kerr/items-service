@@ -1,7 +1,11 @@
 const axios = require('axios');
 const oxford = require('../../config').oxford;
 
-const getDefinition = (word) => {
+/*
+	** @param {string} word
+	** @returns {}
+*/
+const getDefinition = async (word) => {
 	return axios({
 		method: 'get',
 		url: `${oxford.url}/entries/en/${word}`,
@@ -15,7 +19,11 @@ const getDefinition = (word) => {
 	})
 }
 
-const getInflection = (word) => {
+/*
+	** @param {string} word
+	** @returns {}
+*/
+const getInflection = async (word) => {
 	return axios({
 		method: 'get',
 		url: `${oxford.url}/inflections/en/${word}`,
@@ -29,7 +37,11 @@ const getInflection = (word) => {
 	})
 }
 
-const getDefinitionAndInflection = (word) => {
+/*
+	** @param {string} word
+	** @returns {}
+*/
+const getDefinitionAndInflection = async (word) => {
 	let res = {
 		name: word,
 		inflections: [],
