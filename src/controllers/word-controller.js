@@ -45,6 +45,7 @@ const postWord = async (req, res) => {
 };
 
 const getAllWords = async (req, res) => {
+  console.log(req.query);
   if (req.query.random === 'true') {
     return getRandomWord(req, res);
   }
@@ -54,7 +55,7 @@ const getAllWords = async (req, res) => {
 
   try {
     const words = await f.findMany(Word, {}, '_id name');
-    return res.status(200).json(responseHelper.getMany(words));
+    return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   }
   catch (error) {
     return res.status(500).json({
@@ -118,14 +119,15 @@ const deleteWord = async (req, res) => {
 };
 
 const getWordsWithoutDefinitions = async (req, res) => {
+  console.log(req.query)
   const criteria = {
-    definition: {$size: 0}/*,
-    category: {$in: ['adjective', 'adverb', 'noun', 'verb']}*/
+    definition: {$size: 0},
+    category: {$nin: ['name']}
   };
 
   try {
     const words = await f.findMany(Word, criteria, '_id name');
-    return res.status(200).json(responseHelper.getMany(words));
+    return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   }
   catch (error) {
     return res.status(500).json({
@@ -152,7 +154,7 @@ const getWordsWithOldDefinition = async (req, res) => {
 
   try {
     const words = await f.findMany(Word, {}, '_id name');
-    return res.status(200).json(responseHelper.getMany(words));
+    return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   }
   catch (error) {
     return res.status(500).json({
