@@ -4,6 +4,7 @@ const oxford = require('../services/oxford-dictionary-service');
 const responseHelper  = require('../helpers/responseHelpers');
 const newDefinition = require('../helpers/definition');
 const f = require('../helpers/find');
+const filter = require('../helpers/filter');
 
 const postWord = async (req, res) => {
   const word = new Word({
@@ -45,7 +46,6 @@ const postWord = async (req, res) => {
 };
 
 const getAllWords = async (req, res) => {
-  console.log(req.query);
   if (req.query.random === 'true') {
     return getRandomWord(req, res);
   }
@@ -53,8 +53,14 @@ const getAllWords = async (req, res) => {
     return getWordByName(req, res);
   }
 
+  let criteria = {};
+
+  if (req.query.filter) {
+    criteria = filter.equals(req.query.filter);
+  }
+
   try {
-    const words = await f.findMany(Word, {}, '_id name');
+    const words = await f.findMany(Word, criteria, '_id name');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   }
   catch (error) {
