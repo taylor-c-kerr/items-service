@@ -49,15 +49,16 @@ const getAllWords = async (req, res) => {
   if (req.query.random === 'true') {
     return getRandomWord(req, res);
   }
-  if (req.query.name) {
-    return getWordByName(req, res);
-  }
 
   let criteria = {};
 
   if (req.query.filter) {
-    criteria = filter.equals(req.query.filter);
+    criteria = filter(req.query.filter);
+    // let filtered = filter.contains(req.query.filter);
+    // criteria[filtered[0]] = {$regex: filtered[1]}
   }
+
+  // console.log(criteria)
 
   try {
     const words = await f.findMany(Word, criteria, '_id name');
@@ -180,24 +181,6 @@ const getRandomWord = async (req, res) => {
     });
   }
 };
-
-const getWordByName = async (req, res) => {
-  const name = req.query.name;
-  try {
-    const word = await f.findOne(Word, {"name": name});
-    if (word) {
-      return res.status(200).json(responseHelper.getOne(word));
-    }
-    else {
-      return res.status(404).json({error: 'word does not exist'});
-    }
-  }
-  catch (error) {
-    return res.status(500).json({
-      error: error
-    });
-  }
-}
 
 module.exports = {
   postWord,
