@@ -4,6 +4,7 @@ const oxford = require('../services/oxford-dictionary-service');
 const responseHelper  = require('../helpers/responseHelpers');
 const newDefinition = require('../helpers/definition');
 const f = require('../helpers/find');
+const filter = require('../helpers/filter');
 
 const postWord = async (req, res) => {
   const word = new Word({
@@ -45,16 +46,18 @@ const postWord = async (req, res) => {
 };
 
 const getAllWords = async (req, res) => {
-  console.log(req.query);
   if (req.query.random === 'true') {
     return getRandomWord(req, res);
   }
-  if (req.query.name) {
-    return getWordByName(req, res);
+
+  let criteria = {};
+
+  if (req.query.filter) {
+    criteria = filter(req.query.filter);
   }
 
   try {
-    const words = await f.findMany(Word, {}, '_id name');
+    const words = await f.findMany(Word, criteria, '_id name');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   }
   catch (error) {
@@ -174,24 +177,6 @@ const getRandomWord = async (req, res) => {
     });
   }
 };
-
-const getWordByName = async (req, res) => {
-  const name = req.query.name;
-  try {
-    const word = await f.findOne(Word, {"name": name});
-    if (word) {
-      return res.status(200).json(responseHelper.getOne(word));
-    }
-    else {
-      return res.status(404).json({error: 'word does not exist'});
-    }
-  }
-  catch (error) {
-    return res.status(500).json({
-      error: error
-    });
-  }
-}
 
 module.exports = {
   postWord,

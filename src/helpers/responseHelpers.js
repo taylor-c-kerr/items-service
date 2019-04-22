@@ -18,7 +18,7 @@ const getOne = (doc) => {
 ** @param {integer} offset The offset or page number of the responses
 ** @returns {object}
 */
-const getMany = (docs, limit=25, offset=0) => {
+const getMany = (docs, limit=25000, offset=0) => {
 	const total = docs.length;
 	offset = Math.ceil(parseInt(offset));
 	limit = Math.ceil(parseInt(limit));
