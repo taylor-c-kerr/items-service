@@ -8,7 +8,7 @@ const app = require('../app')
 //TODO connect to test db
 chai.use(chaiHttp);
 
-describe('E2E Tests', function() {
+xdescribe('E2E Tests', function() {
   describe('GET /words', function() {
     it('should get all words', function(done) {
       chai.request(app)
