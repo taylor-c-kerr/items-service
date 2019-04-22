@@ -2,6 +2,7 @@ const chai = require('chai');
 const expect = require('chai').expect;
 const chaiHttp = require('chai-http');
 const filter = require('../src/helpers/filter');
+const error = new Error('Invalid query');
 
 describe('Filter Tests', function() {
   describe('EQUALS logic', function() {
@@ -30,31 +31,32 @@ describe('Filter Tests', function() {
       done();
     });
   });
-  xdescribe('handle filter string', function() {
-    it('should split the query string out correctly', function(done) {
-      const string = 'foo=bar%20AND%20bar~foo';
-      // const badString = 'foo~bar';
-      // const longString = 'foo=bar&bar~foo';
-      expect(filter.handleQueryString(string)).to.deep.equal(['foo=bar', 'bar~foo']);
-      done();
-    });
-  });
-  xdescribe('filter EQUALS', function() {
+  describe('filter EQUALS', function() {
     it('should filter properly', function(done) {
-      const string = 'foo=bar';
-      const badString = 'foo~bar';
-      const longString = 'foo=bar&bar~foo';
-      expect(filter.equals(string)).to.deep.equal({foo: 'bar'});
-      expect(filter.equals(badString)).to.deep.equal({});
-      done();
-    });
-  });
-  xdescribe('filter CONTAINS', function() {
-    it('should filter properly', function(done) {
-      const string = 'foo~bar';
+      const string = 'foo=%27bar%27';
       const badString = 'foo=bar';
-      expect(filter.equals(string)).to.deep.equal({foo: 'bar'});
-      expect(filter.equals(badString)).to.deep.equal({});
+      expect(filter(string)).to.deep.equal({foo: /^bar$/gi});
+      expect(() => filter(badString)).to.throw(TypeError);
+      done();
+    });
+  });
+  describe('filter CONTAINS', function() {
+    it('should filter properly', function(done) {
+      const string = 'foo~%27bar%27';
+      const badString = 'foo~bar';
+      expect(filter(string)).to.deep.equal({foo: /.*bar.*/gi});
+      expect(() => filter(badString)).to.throw(TypeError);
+      done();
+    });
+  });
+  describe('handle filter string', function() {
+    it('should split the query string out correctly', function(done) {
+      const andString = 'foo=%27bar%27%20AND%20bar~%27foo%27';
+      const orString = 'foo=%27bar%27%20OR%20bar~%27foo%27';
+      const longString = 'foo=%27bar%27%20AND%20bar~%27foo%27%20AND%20fizz~%27buzz%27'
+      expect(filter(andString)).to.deep.equal({'$and': [{foo: /^bar$/gi}, {bar: /.*foo.*/gi}]});
+      expect(filter(orString)).to.deep.equal({'$or': [{foo: /^bar$/gi}, {bar: /.*foo.*/gi}]});
+      expect(() => filter(longString)).to.throw(TypeError);
       done();
     });
   });
