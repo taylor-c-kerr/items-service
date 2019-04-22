@@ -10,7 +10,7 @@ const equals = (string) => {
     return criteria;
   }
   if (string.indexOf('\'') === -1) {
-    throw error;
+    return error;
   }
   string = string.replace(/'/g, '');
   string = string.split('=');
@@ -28,7 +28,7 @@ const contains = (string) => {
     return criteria;
   }
   if (string.indexOf('\'') === -1) {
-    throw error;
+    return error;
   }
   string = string.replace(/'/g, '');
   string = string.split('~');
@@ -56,7 +56,7 @@ const filter = (filterString) => {
   const delimiter = /%20AND%20|%20OR%20| AND | OR /gi;
   const filters = filterString.split(delimiter);
   if (filters.length > 2) {
-    throw error;
+    return error;
   } else if (filters.length === 1) {
     query = determineQuery(filters[0]);
   } else if (filterString.indexOf(' AND ') > -1) {
