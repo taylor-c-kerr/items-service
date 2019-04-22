@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Word = require('../models/word');
 const oxford = require('../services/oxford-dictionary-service');
-const responseHelper  = require('../helpers/responseHelpers');
+const responseHelper = require('../helpers/responseHelpers');
 const newDefinition = require('../helpers/definition');
 const f = require('../helpers/find');
 const filter = require('../helpers/filter');
@@ -11,7 +11,7 @@ const postWord = async (req, res) => {
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     category: [],
-    inflections : [],
+    inflections: [],
     definition: []
   });
 
@@ -23,7 +23,7 @@ const postWord = async (req, res) => {
 
     // TODO: handle rejection here:
     const properDefinition = await oxford.getDefinitionAndInflection(word.name);
-    
+
     word.name = properDefinition.name;
     word.inflections = properDefinition.inflections;
     // TODO: handle rejection here:
@@ -35,10 +35,8 @@ const postWord = async (req, res) => {
           message: 'Word created',
           data: responseHelper.getOne(word)
         });
-      })
-
-  }
-  catch (error) {
+      });
+  } catch (error) {
     return res.status(500).json({
       error: error
     });
@@ -54,13 +52,18 @@ const getAllWords = async (req, res) => {
 
   if (req.query.filter) {
     criteria = filter(req.query.filter);
+    if (criteria.message === 'Invalid query') {
+      return res.status(500).json({
+        error: criteria.message
+      });
+    }
   }
 
   try {
     const words = await f.findMany(Word, criteria, '_id name');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
-  }
-  catch (error) {
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: error
     });
@@ -73,12 +76,10 @@ const getWord = async (req, res) => {
     const word = await f.findById(Word, id);
     if (word) {
       return res.status(200).json(responseHelper.getOne(word));
-    }
-    else {
+    } else {
       return res.status(404).json({error: 'word does not exist'});
     }
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({
       error: error
     });
@@ -90,23 +91,21 @@ const updateWord = async (req, res) => {
   const updateObject = req.body;
 
   try {
-    let word = await f.findById(Word, id);
+    const word = await f.findById(Word, id);
     if (!word) {
       return res.status(404).json({error: 'Word does not exist'});
     }
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({error: error});
   }
-  
+
   try {
     const updated = await Word.update( {_id: id}, {$set: updateObject} ).exec();
     word = await f.findById(Word, id);
     return res.status(200).json(responseHelper.getOne(word));
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({error: error});
-  }    
+  }
 };
 
 const deleteWord = async (req, res) => {
@@ -115,14 +114,13 @@ const deleteWord = async (req, res) => {
     const word = await f.findById(Word, id);
     await Word.remove( {_id: id} ).exec();
     return res.status(200).json({name: word.name, message: 'Word deleted successfully'});
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({error: error});
   }
 };
 
 const getWordsWithoutDefinitions = async (req, res) => {
-  console.log(req.query)
+  console.log(req.query);
   const criteria = {
     definition: {$size: 0},
     category: {$nin: ['name']}
@@ -131,13 +129,12 @@ const getWordsWithoutDefinitions = async (req, res) => {
   try {
     const words = await f.findMany(Word, criteria, '_id name');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({
-        error: error
-      });
+      error: error
+    });
   }
-  /*Word.find(criteria)
+  /* Word.find(criteria)
     .exec()
     .then((docs) => {
       res.status(200).json(responseHelper.getMany(docs));
@@ -152,26 +149,24 @@ const getWordsWithoutDefinitions = async (req, res) => {
 const getWordsWithOldDefinition = async (req, res) => {
   const criteria = {
     // definition: { results : {$gt: 0} }
-    "definition.results" : {$size: 1}
+    'definition.results': {$size: 1}
   };
 
   try {
     const words = await f.findMany(Word, {}, '_id name');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({
       error: error
     });
   }
-}
+};
 
 const getRandomWord = async (req, res) => {
   try {
     const word = await f.findRandom(Word);
     return res.status(200).json(responseHelper.getOne(word[0]));
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({
       error: error
     });
