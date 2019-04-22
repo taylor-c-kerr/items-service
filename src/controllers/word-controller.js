@@ -54,11 +54,7 @@ const getAllWords = async (req, res) => {
 
   if (req.query.filter) {
     criteria = filter(req.query.filter);
-    // let filtered = filter.contains(req.query.filter);
-    // criteria[filtered[0]] = {$regex: filtered[1]}
   }
-
-  // console.log(criteria)
 
   try {
     const words = await f.findMany(Word, criteria, '_id name');
