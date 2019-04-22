@@ -1,6 +1,9 @@
 const querystring = require('querystring');
 const error = new TypeError('Invalid query');
 
+/*
+  ** @param {string} string a query string that is to be parsed
+*/
 const equals = (string) => {
   let criteria = {};
   if (string.indexOf('=') === -1) {
@@ -15,6 +18,9 @@ const equals = (string) => {
   return criteria;
 }
 
+/*
+  ** @param {string} string a query string that is to be parsed
+*/
 const contains = (string) => {
   let criteria = {};
 
@@ -30,6 +36,9 @@ const contains = (string) => {
   return criteria;
 }
 
+/*
+  ** @param {string} string a query string that is to be parsed
+*/
 const determineQuery = (string) => {
   const query = string.indexOf('=') > -1 ? equals(string)
     : string.indexOf('~') > -1 ? contains(string)
@@ -38,6 +47,9 @@ const determineQuery = (string) => {
     return query;
 }
 
+/*
+  ** @param {string} filterString query string from the url that is parsed and then used to query the db
+*/
 const filter = (filterString) => {
   filterString = querystring.unescape(filterString);
   let query = {}
@@ -57,25 +69,6 @@ const filter = (filterString) => {
   }
 
   return query;
-  /*
-  'foo=bar%20AND%20bar~foo%'
-  'bar~foo%20OR%20fuzz=buzz'
-  change the and /or to their proper
-  The $or operator performs a logical OR operation on an array of two or more <expressions>
-  and selects the documents that satisfy at least one of the <expressions>.
-  { $or: [ { <expression1> }, { <expression2> }, ... , { <expressionN> } ] }
-
-  { $and: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
-  */
-
-
-
 }
-
-// filter('foo=bar%20OR%20bar~foo')
-// filter('foo=%27bar%27%20AND%20bar~%27foo%27')
-// filter('foo=\'bar\'')
-// filter('bar~\'foo\'')
-// filter('foo=bar%20AND%20bar~foo%20OR%20fuzz=buzz')
 
 module.exports = filter;
