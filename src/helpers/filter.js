@@ -10,7 +10,7 @@ const equals = (string) => {
     return criteria;
   }
   if (string.indexOf('\'') === -1) {
-    return error;
+    throw error;
   }
   string = string.replace(/'/g, '');
   string = string.split('=');
@@ -28,7 +28,7 @@ const contains = (string) => {
     return criteria;
   }
   if (string.indexOf('\'') === -1) {
-    return error;
+    throw error;
   }
   string = string.replace(/'/g, '');
   string = string.split('~');
@@ -40,10 +40,17 @@ const contains = (string) => {
   ** @param {string} string a query string that is to be parsed
 */
 const determineQuery = (string) => {
-  const query = string.indexOf('=') > -1 ? equals(string)
-    : string.indexOf('~') > -1 ? contains(string)
-      : error;
+  let query;
 
+  if (string.indexOf('=') > -1) {
+    query = equals(string);
+  }
+  else if (string.indexOf('~') > -1) {
+    query = contains(string);
+  }
+  else {
+    throw error;
+  }
   return query;
 };
 
@@ -56,7 +63,7 @@ const filter = (filterString) => {
   const delimiter = /%20AND%20|%20OR%20| AND | OR /gi;
   const filters = filterString.split(delimiter);
   if (filters.length > 2) {
-    return error;
+    throw error;
   } else if (filters.length === 1) {
     query = determineQuery(filters[0]);
   } else if (filterString.indexOf(' AND ') > -1) {
