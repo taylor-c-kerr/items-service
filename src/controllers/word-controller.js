@@ -5,6 +5,7 @@ const responseHelper = require('../helpers/responseHelpers');
 const newDefinition = require('../helpers/definition');
 const f = require('../helpers/find');
 const filter = require('../helpers/filter');
+const allowed = require('../constants/allowed');
 
 const postWord = async (req, res) => {
   const word = new Word({
@@ -44,6 +45,8 @@ const postWord = async (req, res) => {
 };
 
 const getAllWords = async (req, res) => {
+  const sortField = req.query.sort;
+  const orderBy = req.query.orderBy;
   if (req.query.random === 'true') {
     return getRandomWord(req, res);
   }
@@ -59,8 +62,23 @@ const getAllWords = async (req, res) => {
     }
   }
 
+  let sort = {};
+
+  // both sort and orderBy, AND both are allowed, pass both
+  if (sortField && orderBy && allowed.sortableFields.indexOf(sortField) > -1 && allowed.orderableFields.indexOf(orderBy) > -1) {
+    sort[sortField] = orderBy;
+  }
+  // sort but not orderBy, AND sort is allowed, pass sort and 'asc'
+  else if (sortField && !orderBy && allowed.sortableFields.indexOf(sortField) > -1) {
+    sort[sortField] = 'asc';
+  }
+  // pass undefined and use the default sort
+  else {
+    sort = undefined;
+  }
+
   try {
-    const words = await f.findMany(Word, criteria, '_id name');
+    const words = await f.findMany(Word, criteria, '_id name', sort);
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   } catch (error) {
     console.log(error);
