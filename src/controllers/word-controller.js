@@ -54,10 +54,12 @@ const getAllWords = async (req, res) => {
   let criteria = {};
 
   if (req.query.filter) {
-    criteria = filter(req.query.filter);
-    if (criteria.message === 'Invalid query') {
+    try {
+      criteria = filter(req.query.filter);
+    }
+    catch (error) {
       return res.status(500).json({
-        error: criteria.message
+        error: error.message
       });
     }
   }
