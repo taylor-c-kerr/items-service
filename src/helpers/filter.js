@@ -40,10 +40,6 @@ const contains = (string) => {
   ** @param {string} string a query string that is to be parsed
 */
 const determineQuery = (string) => {
-  // const query = string.indexOf('=') > -1 ? equals(string)
-    // : string.indexOf('~') > -1 ? contains(string)
-      // : error;
-
   let query;
 
   if (string.indexOf('=') > -1) {

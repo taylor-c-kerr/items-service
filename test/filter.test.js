@@ -35,9 +35,7 @@ describe('Filter Tests', function() {
     it('should filter properly', function(done) {
       const string = 'foo=%27bar%27';
       const badString = 'foo=bar';
-      // const badFunc = () => filter(badString);
       expect(filter(string)).to.deep.equal({foo: /^bar$/gi});
-      // expect(() => filter(badString)).to.throw(TypeError);
       expect(() => filter(badString)).to.throw(TypeError);
       done();
     });
