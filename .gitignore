@@ -2,3 +2,4 @@
 .DS_STORE
 /src/scripts
 config.js
+ecosystem.config.js
