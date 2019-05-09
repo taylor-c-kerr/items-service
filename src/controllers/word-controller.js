@@ -8,6 +8,13 @@ const filter = require('../helpers/filter');
 const allowed = require('../constants/allowed');
 
 const postWord = async (req, res) => {
+
+  if (!req.body.name) {
+    return res.status(500).json({
+      error: 'Invalid request'
+    })
+  }
+
   const word = new Word({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
@@ -16,18 +23,16 @@ const postWord = async (req, res) => {
     definition: []
   });
 
+  const alreadyInDb = await f.findOne(Word, {name: word.name});
+  if (alreadyInDb) {
+    return res.status(500).json({error: 'Word already exists'});
+  }
+
   try {
-    const alreadyInDb = await f.findOne(Word, {name: word.name});
-    if (alreadyInDb) {
-      return res.status(401).json({message: 'Word already in database'});
-    }
-
-    // TODO: handle rejection here:
     const properDefinition = await oxford.getDefinitionAndInflection(word.name);
-
     word.name = properDefinition.name;
     word.inflections = properDefinition.inflections;
-    // TODO: handle rejection here:
+
     word.definition = await newDefinition(properDefinition.definition[0].results);
 
     word.save()
@@ -38,9 +43,7 @@ const postWord = async (req, res) => {
         });
       });
   } catch (error) {
-    return res.status(500).json({
-      error: error
-    });
+    return res.status(500).json({error: `Invalid word: ${word.name}`});
   }
 };
 
@@ -140,7 +143,6 @@ const deleteWord = async (req, res) => {
 };
 
 const getWordsWithoutDefinitions = async (req, res) => {
-  console.log(req.query);
   const criteria = {
     definition: {$size: 0},
     category: {$nin: ['name']}
@@ -154,16 +156,6 @@ const getWordsWithoutDefinitions = async (req, res) => {
       error: error
     });
   }
-  /* Word.find(criteria)
-    .exec()
-    .then((docs) => {
-      res.status(200).json(responseHelper.getMany(docs));
-    })
-    .catch((error) => {
-      res.status(500).json({
-          error: error
-        });
-      });*/
 };
 
 const getWordsWithOldDefinition = async (req, res) => {
@@ -173,7 +165,7 @@ const getWordsWithOldDefinition = async (req, res) => {
   };
 
   try {
-    const words = await f.findMany(Word, {}, '_id name');
+    const words = await f.findMany(Word, criteria, '_id name');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   } catch (error) {
     return res.status(500).json({
