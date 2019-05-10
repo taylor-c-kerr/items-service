@@ -3,8 +3,9 @@ const Word = require('../models/word');
 const oxford = require('../services/oxford-dictionary-service');
 const responseHelper = require('../helpers/responseHelpers');
 const newDefinition = require('../helpers/definition');
-const f = require('../helpers/find');
+const find = require('../helpers/find');
 const filter = require('../helpers/filter');
+const getCategory = require('../helpers/getCategory');
 const allowed = require('../constants/allowed');
 
 const postWord = async (req, res) => {
@@ -17,9 +18,9 @@ const postWord = async (req, res) => {
   });
 
   try {
-    const alreadyInDb = await f.findOne(Word, {name: word.name});
+    const alreadyInDb = await find.one(Word, {name: word.name});
     if (alreadyInDb) {
-      return res.status(401).json({message: 'Word already in database'});
+      return res.status(401).json({message: 'Word already exists'});
     }
 
     // TODO: handle rejection here:
@@ -29,6 +30,7 @@ const postWord = async (req, res) => {
     word.inflections = properDefinition.inflections;
     // TODO: handle rejection here:
     word.definition = await newDefinition(properDefinition.definition[0].results);
+    word.category = await getCategory(word.definition);
 
     word.save()
       .then((result) => {
@@ -80,7 +82,7 @@ const getAllWords = async (req, res) => {
   }
 
   try {
-    const words = await f.findMany(Word, criteria, '_id name', sort);
+    const words = await find.many(Word, criteria, '_id name', sort);
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   } catch (error) {
     console.log(error);
@@ -93,7 +95,7 @@ const getAllWords = async (req, res) => {
 const getWord = async (req, res) => {
   const id = req.params.id;
   try {
-    const word = await f.findById(Word, id);
+    const word = await find.byId(Word, id);
     if (word) {
       return res.status(200).json(responseHelper.getOne(word));
     } else {
@@ -111,7 +113,7 @@ const updateWord = async (req, res) => {
   const updateObject = req.body;
 
   try {
-    const word = await f.findById(Word, id);
+    const word = await find.byId(Word, id);
     if (!word) {
       return res.status(404).json({error: 'Word does not exist'});
     }
@@ -121,7 +123,7 @@ const updateWord = async (req, res) => {
 
   try {
     const updated = await Word.update( {_id: id}, {$set: updateObject} ).exec();
-    word = await f.findById(Word, id);
+    word = await find.byId(Word, id);
     return res.status(200).json({
       message: 'Word updatede', 
       word: responseHelper.getOne(word)
@@ -134,7 +136,7 @@ const updateWord = async (req, res) => {
 const deleteWord = async (req, res) => {
   const id = req.params.id;
   try {
-    const word = await f.findById(Word, id);
+    const word = await find.byId(Word, id);
     await Word.remove( {_id: id} ).exec();
     return res.status(200).json({name: word.name, message: 'Word deleted successfully'});
   } catch (error) {
@@ -150,23 +152,13 @@ const getWordsWithoutDefinitions = async (req, res) => {
   };
 
   try {
-    const words = await f.findMany(Word, criteria, '_id name');
+    const words = await find.many(Word, criteria, '_id name');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   } catch (error) {
     return res.status(500).json({
       error: error
     });
   }
-  /* Word.find(criteria)
-    .exec()
-    .then((docs) => {
-      res.status(200).json(responseHelper.getMany(docs));
-    })
-    .catch((error) => {
-      res.status(500).json({
-          error: error
-        });
-      });*/
 };
 
 const getWordsWithOldDefinition = async (req, res) => {
@@ -175,7 +167,7 @@ const getWordsWithOldDefinition = async (req, res) => {
   };
 
   try {
-    const words = await f.findMany(Word, criteria, '_id name');
+    const words = await find.many(Word, criteria, '_id name');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   } catch (error) {
     return res.status(500).json({
@@ -192,7 +184,7 @@ const getWordsWithNoCategory = async (req, res) => {
   };
 
   try {
-    const words = await f.findMany(Word, criteria, '_id name category definition');
+    const words = await find.many(Word, criteria, '_id name category definition');
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   } catch (error) {
     return res.status(500).json({
@@ -203,7 +195,7 @@ const getWordsWithNoCategory = async (req, res) => {
 
 const getRandomWord = async (req, res) => {
   try {
-    const word = await f.findRandom(Word);
+    const word = await find.random(Word);
     return res.status(200).json(responseHelper.getOne(word[0]));
   } catch (error) {
     return res.status(500).json({
