@@ -186,11 +186,7 @@ const getWordsWithNoCategory = async (req, res) => {
   };
 
   try {
-<<<<<<< HEAD
-    const words = await f.findMany(Word, criteria, '_id name');
-=======
     const words = await find.many(Word, criteria, '_id name category definition');
->>>>>>> e57f8c43e6d013939ca08d6b67ed698c31b948b6
     return res.status(200).json(responseHelper.getMany(words, req.query.limit, req.query.offset));
   } catch (error) {
     return res.status(500).json({
